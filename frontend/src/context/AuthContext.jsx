@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../services/courseService';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -13,6 +14,8 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     if (storedUser && token) {
+      // attach token to API client so subsequent requests include Authorization
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(JSON.parse(storedUser));
     }
     setLoading(false);
@@ -25,6 +28,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('user', JSON.stringify(userData));
+
+    // attach token to API client
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
     setUser(userData);
     return userData;
   };
@@ -36,12 +43,18 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('user', JSON.stringify(userData));
+
+    // attach token to API client
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
     setUser(userData);
     return userData;
   };
 
   const logout = () => {
     const refreshToken = localStorage.getItem('refreshToken');
+    // remove token from API client
+    delete api.defaults.headers.common['Authorization'];
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
