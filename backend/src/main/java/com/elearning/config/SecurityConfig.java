@@ -74,6 +74,7 @@ public class SecurityConfig {
                 .requestMatchers("/courses/instructor/**").hasAnyRole("INSTRUCTOR", "ADMIN")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/instructor/**").hasAnyRole("INSTRUCTOR", "ADMIN")
+                .requestMatchers("/health").permitAll()                   
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
